@@ -1,5 +1,4 @@
 import networkx as nx
-import random
 import numpy as np
 
 class FLG_environment:
@@ -8,6 +7,7 @@ class FLG_environment:
         
         self.n_nodes = n_nodes
         self.seed = seed
+        self.rng = np.random.default_rng(seed=self.seed)
         self.demand_distribution = demand_distribution
         self.weight_distribution = weight_distribution
         self.potential_facilities = potential_facilities
@@ -27,30 +27,29 @@ class FLG_environment:
 
     def generate_flg_env(self):
 
-        base_tree = self.generate_tree()
-        node_demand = self.generate_demand_distribution()
-        potential_facilities = self.select_potential_facilities()
-
-        return (base_tree, node_demand, potential_facilities)
+        self.graph, self.adj_matrix = self.generate_tree()
+        self.node_demand = self.generate_demand_distribution()
+        self.potential_facilities_mask = self.select_potential_facilities()
+        return self
 
     
     def generate_tree(self):
 
-        random.seed(self.seed)
+        np.random.seed(self.seed)
         G = nx.Graph()
         nodes = list(range(self.n_nodes))
         G.add_node(nodes[0])
         
         if self.weight_distribution[0] == 'normal':
             for i in nodes[1:]:
-                parent = random.choice(nodes[:i])
+                parent = np.random.choice(nodes[:i])
                 random_weight = np.random.normal(loc=self.weight_distribution[1], scale=self.weight_distribution[2])
                 random_weight = np.round(np.abs(random_weight)).astype(int)
                 random_weight = np.clip(random_weight,1,None)
                 G.add_edge(parent, i, weight=random_weight)
         elif self.weight_distribution[0] == 'uniform':
             for i in nodes[1:]:
-                parent = random.choice(nodes[:i])
+                parent = np.random.choice(nodes[:i])
                 random_weight = np.random.uniform(low=self.weight_distribution[1], high=self.weight_distribution[2])
                 random_weight = np.round(np.abs(random_weight)).astype(int)
                 random_weight = np.clip(random_weight,1,None)
@@ -60,7 +59,7 @@ class FLG_environment:
 
         G_adj_matrix = np.array(nx.adjacency_matrix(G).todense())
         
-        return G_adj_matrix
+        return (G, G_adj_matrix)
     
 
     def generate_demand_distribution(self):
@@ -74,6 +73,8 @@ class FLG_environment:
         
         demand = np.round(np.abs(demand)).astype(int)
         demand = np.clip(demand,1,None)
+
+        demand = {i: val for i, val in enumerate(demand)}
 
         return demand
     
