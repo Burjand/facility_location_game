@@ -7,16 +7,17 @@ class FLG_environment:
         
         self.n_nodes = n_nodes
         self.seed = seed
-        self.rng = np.random.default_rng(seed=self.seed)
         self.demand_distribution = demand_distribution
         self.weight_distribution = weight_distribution
         self.potential_facilities = potential_facilities
+        self.rng = np.random.default_rng(seed=self.seed)        
 
         self.check_potential_facilities()
-        self.FLG_env = self.generate_flg_env()
+        self.generate_flg_env()
 
 
     def check_potential_facilities(self):
+        # Make sure that the number of potential facilities is a valid number
 
         if self.potential_facilities > self.n_nodes:
             raise ValueError("Number of potential facilities cannot exceed number of nodes.")
@@ -27,63 +28,55 @@ class FLG_environment:
 
     def generate_flg_env(self):
 
+        # Generate the whole FLG environment
         self.graph, self.adj_matrix = self.generate_tree()
         self.node_demand = self.generate_demand_distribution()
         self.potential_facilities_mask = self.select_potential_facilities()
-        return self
 
     
     def generate_tree(self):
 
-        np.random.seed(self.seed)
-        G = nx.Graph()
-        nodes = list(range(self.n_nodes))
-        G.add_node(nodes[0])
-        
-        if self.weight_distribution[0] == 'normal':
-            for i in nodes[1:]:
-                parent = np.random.choice(nodes[:i])
-                random_weight = np.random.normal(loc=self.weight_distribution[1], scale=self.weight_distribution[2])
-                random_weight = np.round(np.abs(random_weight)).astype(int)
-                random_weight = np.clip(random_weight,1,None)
-                G.add_edge(parent, i, weight=random_weight)
-        elif self.weight_distribution[0] == 'uniform':
-            for i in nodes[1:]:
-                parent = np.random.choice(nodes[:i])
-                random_weight = np.random.uniform(low=self.weight_distribution[1], high=self.weight_distribution[2])
-                random_weight = np.round(np.abs(random_weight)).astype(int)
-                random_weight = np.clip(random_weight,1,None)
-                G.add_edge(parent, i, weight=random_weight)
-        else:
-            raise ValueError("Unsupported weight distribution type.")
+        # Generate tree graph
+        G = nx.random_labeled_tree(n=self.n_nodes, seed=self.seed)
+        #G = nx.convert_node_labels_to_integers(G)
 
-        G_adj_matrix = np.array(nx.adjacency_matrix(G).todense())
-        
-        return (G, G_adj_matrix)
+        # Assign edge weights according to the chosen distribution
+        for u, v in G.edges():
+            if self.weight_distribution[0] == 'normal':
+                weight = self.rng.normal(loc=self.weight_distribution[1], scale=self.weight_distribution[2])
+
+            elif self.weight_distribution[0] == 'uniform':
+                weight = self.rng.uniform(low=self.weight_distribution[1], high=self.weight_distribution[2])
+
+            weight = np.abs(np.clip(np.round(weight).astype(int), 1, None))
+            G.edges[u, v]['weight'] = weight
+
+        # Create adjacency matrix
+        G_adj_matrix = nx.adjacency_matrix(G, weight='weight').todense()
+
+        return G, G_adj_matrix
     
 
     def generate_demand_distribution(self):
 
+        # Generate demand for each node according to the specified distribution
         if self.demand_distribution[0] == 'normal':
-            demand = np.random.normal(loc=self.demand_distribution[1], scale=self.demand_distribution[2], size=self.n_nodes)
+            demand = self.rng.normal(loc=self.demand_distribution[1], scale=self.demand_distribution[2], size=self.n_nodes)
+
         elif self.demand_distribution[0] == 'uniform':
-            demand = np.random.uniform(low=self.demand_distribution[1], high=self.demand_distribution[2], size=self.n_nodes)
+            demand = self.rng.uniform(low=self.demand_distribution[1], high=self.demand_distribution[2], size=self.n_nodes)
+
         else:
             raise ValueError("Unsupported demand distribution type.")
         
         demand = np.round(np.abs(demand)).astype(int)
-        demand = np.clip(demand,1,None)
-
-        demand = {i: val for i, val in enumerate(demand)}
-
-        return demand
+        demand = np.clip(demand, 1, None) # Ensure demand >= 1
+        return {i: demand[i] for i in range(self.n_nodes)}
     
 
     def select_potential_facilities(self):
 
-        arr = np.zeros(self.n_nodes, dtype=int)
-        arr[:self.potential_facilities] = 1
-        np.random.shuffle(arr)
-        return arr.tolist()
+        facilities = self.rng.choice(self.n_nodes, size=self.potential_facilities, replace=False).tolist()
+        return [1 if i in facilities else 0 for i in range(self.n_nodes)]
         
         return selected_nodes

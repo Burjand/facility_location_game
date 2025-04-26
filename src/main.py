@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import copy
 
 
 from Facility_Location_Game import FLG_environment
@@ -8,31 +9,37 @@ from Best_Response_Dynamics import BRD
 
 if __name__ == "__main__":
     # Hyperparameters
-    n_nodes = 10
-    n_potential_facilities = 10
-    n_brd_players = 3
+    n_nodes = 100    # Number of nodes in the graph
+    n_potential_facilities = 80 # Number of potential facilities
+    n_brd_players = 10 # Number of players in the BRD process
+    max_iterations = 1000 
+    convergence_threshold = 1e-5
+    seed = 66
 
     # Generate the FLG environment
-    FLG_env_gen = FLG_environment(n_nodes, n_potential_facilities)
-    flg_env = FLG_env_gen.FLG_env
+    FLG_env = FLG_environment(n_nodes, n_potential_facilities, seed=seed)
 
     # Calculate all distances between nodes using Dijkstra's algorithm for computational efficiency
-    distances = Tools().calculate_distance_matrix(flg_env.graph)
+    distances = Tools().calculate_distance_matrix(FLG_env.graph)
 
     # Setup the BRD players
-    BRD_setup = BRD(n_brd_players, distances, flg_env)
+    BRD_setup = BRD(n_brd_players, distances, FLG_env, seed=seed)
 
     # Best Response Dynamics process
     players_find_best_response = [True] * n_brd_players
 
     iteration = 0
-    potential_function_development = []
-    player_assignments_over_time = []
-    while any(players_find_best_response):        
+    potential_function_development = [] # Track how the potential function changes over time
+    player_assignments_over_time = [] # Track players' assignments over time
+    while any(players_find_best_response) and iteration < max_iterations:       
 
         # Actual rocess
-        turn_of_player = np.random.choice(tuple(range(n_brd_players)))
-        players_find_best_response[turn_of_player] = BRD_setup.find_best_response(turn_of_player)
+        turn_of_player = np.random.choice(tuple(range(n_brd_players))) # Randomly select a player to find their best response
+        updated = BRD_setup.find_best_response(turn_of_player)
+        if updated:
+            players_find_best_response = [True] * n_brd_players  # Force recheck all players
+        else:
+            players_find_best_response[turn_of_player] = False
 
         # Simulation development study
         iteration += 1
@@ -40,12 +47,12 @@ if __name__ == "__main__":
         potential_function_development.append(potential_function_current_value)
         print(potential_function_current_value)
 
-        snapshot = {pid: data for pid, data in BRD_setup.players.items()}
+        snapshot = {pid: copy.deepcopy(data) for pid, data in BRD_setup.players.items()}
         player_assignments_over_time.append(snapshot)
         
 
     # When the while loop ends it means that all player were not capable of finding a best response so the Nash Equilibrium is reached
-    print("Nash Equilibrium found!!!!!!")
+    print(f"Nash Equilibrium found at iteration {iteration}!!!!!!")
     print("Final players' positions:")
     for player_id, player_data in BRD_setup.players.items():
         print(f"Player {player_id}: Facility Position: {player_data['facility_position']}, Utility: {player_data['Utility']}")
