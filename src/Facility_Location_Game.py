@@ -38,7 +38,7 @@ class FLG_environment:
 
         # Generate tree graph
         G = nx.random_labeled_tree(n=self.n_nodes, seed=self.seed)
-        #G = nx.convert_node_labels_to_integers(G)
+        G = nx.convert_node_labels_to_integers(G)
 
         # Assign edge weights according to the chosen distribution
         for u, v in G.edges():

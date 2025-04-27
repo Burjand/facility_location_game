@@ -15,9 +15,11 @@ if __name__ == "__main__":
     max_iterations = 1000 
     convergence_threshold = 1e-5
     seed = 66
+    main_rng = np.random.default_rng(seed=seed)
 
     # Generate the FLG environment
     FLG_env = FLG_environment(n_nodes, n_potential_facilities, seed=seed)
+    assert all(isinstance(node, int) for node in FLG_env.graph.nodes())
 
     # Calculate all distances between nodes using Dijkstra's algorithm for computational efficiency
     distances = Tools().calculate_distance_matrix(FLG_env.graph)
@@ -34,7 +36,7 @@ if __name__ == "__main__":
     while any(players_find_best_response) and iteration < max_iterations:       
 
         # Actual rocess
-        turn_of_player = np.random.choice(tuple(range(n_brd_players))) # Randomly select a player to find their best response
+        turn_of_player = main_rng.choice(tuple(range(n_brd_players))) # Randomly select a player to find their best response
         updated = BRD_setup.find_best_response(turn_of_player)
         if updated:
             players_find_best_response = [True] * n_brd_players  # Force recheck all players

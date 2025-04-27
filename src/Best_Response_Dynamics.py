@@ -27,10 +27,10 @@ class BRD():
         
         # Create a dictionary of options where is possible to put a facility, the value is initialized to 0 to indicate that in that potential facility there is no player assigned
         # and the key is the index of the potential facility
-        self.facility_options = {}
-        for i in range(len(self.potential_facilities)):
-            if self.potential_facilities[i] == 1:
-                self.facility_options[i] = 0
+        self.facility_options = {
+            i: 0 for i, is_potential in enumerate(self.potential_facilities) 
+            if is_potential == 1
+        }
 
         # Create players and assign them to random facilities
         players = {}
@@ -88,6 +88,7 @@ class BRD():
 
     def calculate_facility_utility(self, target_facility, taken_facilities):
 
+        # Utilities reward both demand capture and cost minimization
         nearest_nodes = self.calculate_nearest_nodes(taken_facilities)
         captured_clients = nearest_nodes.get(target_facility, [])
         
@@ -109,7 +110,11 @@ class BRD():
         # Create a dictionary where the keys are the taken facilities and the values will hold the nearest nodes to each facility
         facilities_nearest_nodes = {facility: [] for facility in taken_facilities}
 
-        for node in self.distances.keys():
+        for node in self.distances:
+
+            if node in taken_facilities:
+                facilities_nearest_nodes[node].append(node)
+                continue
 
             node_distances = self.distances[node] # Access to the disrances of the analyzed node to all other nodes
 
