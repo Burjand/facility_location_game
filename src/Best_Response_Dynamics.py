@@ -23,7 +23,7 @@ class BRD():
 
     def create_players(self):
 
-        print("Nodes demands: " + str(self.nodes_demand))
+        #print("Nodes demands: " + str(self.nodes_demand))
         
         # Create a dictionary of options where is possible to put a facility, the value is initialized to 0 to indicate that in that potential facility there is no player assigned
         # and the key is the index of the potential facility
@@ -44,7 +44,7 @@ class BRD():
             taken_facilities = [facility for facility, taken in self.facility_options.items() if taken == 1]
             player['Utility'] = self.calculate_facility_utility(player['facility_position'], taken_facilities)
 
-        print("Players created with their initial positions and utilities:" + str(players)) 
+        #print("Players created with their initial positions and utilities:" + str(players)) 
 
         return players
 

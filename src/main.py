@@ -1,18 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
-
+import statistics
 
 from Facility_Location_Game import FLG_environment
 from Tools import Tools
 from Best_Response_Dynamics import BRD
 
 if __name__ == "__main__":
+
     # Hyperparameters
     n_nodes = 100    # Number of nodes in the graph
     n_potential_facilities = 80 # Number of potential facilities
     n_brd_players = 10 # Number of players in the BRD process
-    max_iterations = 1000 
+    max_iterations = 1000
     convergence_threshold = 1e-5
     seed = 66
     main_rng = np.random.default_rng(seed=seed)
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     players_find_best_response = [True] * n_brd_players
 
     iteration = 0
-    potential_function_development = [] # Track how the potential function changes over time
+    potential_function_development = [] # Track how the potential function changes over time        
     player_assignments_over_time = [] # Track players' assignments over time
     while any(players_find_best_response) and iteration < max_iterations:       
 
@@ -47,11 +48,10 @@ if __name__ == "__main__":
         iteration += 1
         potential_function_current_value = BRD_setup.calculate_potential_function()
         potential_function_development.append(potential_function_current_value)
-        print(potential_function_current_value)
+        #print(potential_function_current_value)
 
         snapshot = {pid: copy.deepcopy(data) for pid, data in BRD_setup.players.items()}
         player_assignments_over_time.append(snapshot)
-        
 
     # When the while loop ends it means that all player were not capable of finding a best response so the Nash Equilibrium is reached
     print(f"Nash Equilibrium found at iteration {iteration}!!!!!!")
@@ -63,15 +63,17 @@ if __name__ == "__main__":
 
 
     # Plotting simulation development
-    # Plot development of the potential function over time
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(10, 12))
+
+    # Plot development of the Potential Function Over Time
+    plt.subplot(3, 1, 1)  # 3 rows, 1 column, position 1
     plt.plot(potential_function_development, marker='o')
     plt.title("Potential Function Over Time")
     plt.xlabel("Iteration")
     plt.ylabel("Potential Function Value")
     plt.grid(True)
-    plt.show()
 
+    # Data for the other two plots
     player_facility_positions = {pid: [] for pid in range(n_brd_players)}
     player_utilities = {pid: [] for pid in range(n_brd_players)}
 
@@ -80,8 +82,8 @@ if __name__ == "__main__":
             player_facility_positions[pid].append(data['facility_position'])
             player_utilities[pid].append(data['Utility'])
 
-    # Plot facility assignments over time
-    plt.figure(figsize=(10, 4))
+    # Plot development of the Facility Positions Over Time
+    plt.subplot(3, 1, 2)  # Position 2
     for pid, positions in player_facility_positions.items():
         plt.plot(positions, label=f'Player {pid}', marker='o')
     plt.title("Facility Positions Over Time")
@@ -89,11 +91,9 @@ if __name__ == "__main__":
     plt.ylabel("Facility ID")
     plt.legend()
     plt.grid(True)
-    plt.tight_layout()
-    plt.show()
 
-    # Plot utility over time
-    plt.figure(figsize=(10, 4))
+    # Plot development of the Utility Over Time
+    plt.subplot(3, 1, 3)  # Position 3
     for pid, utils in player_utilities.items():
         plt.plot(utils, label=f'Player {pid}', marker='x')
     plt.title("Utility Over Time")
@@ -101,6 +101,8 @@ if __name__ == "__main__":
     plt.ylabel("Utility")
     plt.legend()
     plt.grid(True)
+
+
     plt.tight_layout()
     plt.show()
 
