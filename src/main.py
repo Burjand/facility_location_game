@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
-import statistics
 
 from Facility_Location_Game import FLG_environment
 from Tools import Tools
@@ -36,7 +35,7 @@ if __name__ == "__main__":
     player_assignments_over_time = [] # Track players' assignments over time
     while any(players_find_best_response) and iteration < max_iterations:       
 
-        # Actual rocess
+        # Actual process
         turn_of_player = main_rng.choice(tuple(range(n_brd_players))) # Randomly select a player to find their best response
         updated = BRD_setup.find_best_response(turn_of_player)
         if updated:
@@ -48,7 +47,7 @@ if __name__ == "__main__":
         iteration += 1
         potential_function_current_value = BRD_setup.calculate_potential_function()
         potential_function_development.append(potential_function_current_value)
-        #print(potential_function_current_value)
+        print(potential_function_current_value)
 
         snapshot = {pid: copy.deepcopy(data) for pid, data in BRD_setup.players.items()}
         player_assignments_over_time.append(snapshot)
