@@ -5,6 +5,7 @@ from Best_Response_Dynamics import BRD
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
+import statistics as stats
 
 class Simulation():
 
@@ -15,7 +16,6 @@ class Simulation():
         self.n_brd_players = n_brd_players
         self.max_iterations = max_iterations
         self.seed = seed
-        self.n_simulations = n_simulations
         self.main_rng = np.random.default_rng(seed=self.seed)
 
         self.setup_simulation()
@@ -121,3 +121,32 @@ class Simulation():
 
             plt.tight_layout()
             plt.show()
+
+    
+    def run_simulations(self, n_simulations):
+
+        avg_iterations = 0
+        potential_function_developments_per_iteration = []
+        players_developments_per_iteration = []
+
+        for i in range(n_simulations):
+
+            print(f"Running simulation {i+1}/{n_simulations}...")
+            iterations, potential_function_development, players_development_over_time = self.run_FLG_BRD_simulation()
+
+            avg_iterations += iterations
+            potential_function_developments_per_iteration.append(potential_function_development)
+            players_developments_per_iteration.append(players_development_over_time)
+
+        avg_iterations /= n_simulations
+
+        return avg_iterations, potential_function_developments_per_iteration, players_developments_per_iteration
+            
+
+    def show_multiple_simulation_results(self, avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration):
+
+        # Show the results of the simulation
+        print(f"The simulations took {avg_iterations} iterations on average to be completed")
+
+        print(f"The average final potential function value was: {stats.mean([pf[-1] for pf in potential_function_developments_per_iteration])}")
+
