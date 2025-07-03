@@ -1,7 +1,4 @@
 {
-    //Configuration
-    capacitated_facilities: false,
-
     //Hyperparameters
     n_nodes: 100,
     n_potential_facilities: 80,

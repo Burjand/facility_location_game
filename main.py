@@ -24,11 +24,7 @@ if __name__ == "__main__":
     demand_distribution = tuple(CONFIGURATION['demand_distribution']) # The distribution of the graph's demand (node weights)
     cost_distribution = tuple(CONFIGURATION['weight_distribution']) # The distribution of the graph's costs (edge weights)
 
-    # Add-ons
-    facility_capacity =  CONFIGURATION['facility_capacity']   
-
     # SIMULATION
-
     # Setup simulation
     simulation = Simulation(n_nodes, n_potential_facilities, n_brd_players, max_iterations, seed, demand_distribution, cost_distribution)
     
