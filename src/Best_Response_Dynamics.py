@@ -61,7 +61,7 @@ class BRD():
             player_id (int): The player that will find its best response
 
         Returns:
-            True or False: if a better facility was found
+            bool: if a better facility was found
         """
 
         current_facility = self.players[player_id]['facility_position']

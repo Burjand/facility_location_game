@@ -1,0 +1,13 @@
+{
+    //Configuration
+    capacitated_facilities: false,
+
+    //Hyperparameters
+    n_nodes: 100,
+    n_potential_facilities: 80,
+    n_brd_players: 10,
+    max_iterations: 1000,
+    seed: 66,
+    n_simulations: 1,
+    convergence_threshold: 1e-5
+}
