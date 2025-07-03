@@ -1,9 +1,13 @@
-from Simulation import Simulation
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+
+from src.Simulation import Simulation
 import tools.general_tools as general_tool
 
 if __name__ == "__main__":
 
-    CONFIGURATION = general_tool.extract_json_data("data/config.json")
+    CONFIGURATION = general_tool.extract_json_data("config.json5")
 
     # CONFIGURATION
     capacitated_facilities = CONFIGURATION['capacitated_facilities'] # (bool) True if you want capacitated facilities
