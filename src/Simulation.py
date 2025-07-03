@@ -9,7 +9,7 @@ import statistics as stats
 
 class Simulation():
 
-    def __init__(self, n_nodes, n_potential_facilities, n_brd_players, max_iterations, n_simulations, seed):
+    def __init__(self, n_nodes, n_potential_facilities, n_brd_players, max_iterations, seed, demand_distribution, weight_distribution):
 
         self.n_nodes = n_nodes
         self.n_potential_facilities = n_potential_facilities
@@ -17,6 +17,8 @@ class Simulation():
         self.max_iterations = max_iterations
         self.seed = seed
         self.main_rng = np.random.default_rng(seed=self.seed)
+        self.demand_distribution = demand_distribution
+        self.weight_distribution = weight_distribution
 
         self.setup_simulation()
 
@@ -28,7 +30,7 @@ class Simulation():
         """
 
         # Generate the FLG environment
-        self.FLG_env = FLG_environment(self.n_nodes, self.n_potential_facilities, seed=self.seed)
+        self.FLG_env = FLG_environment(self.n_nodes, self.n_potential_facilities, seed=self.seed, demand_distribution=self.demand_distribution, weight_distribution=self.weight_distribution)
         assert all(isinstance(node, int) for node in self.FLG_env.graph.nodes()) # Check that nodes were correctly generated (Just in case)
 
         # Calculate all distances between nodes using Dijkstra's algorithm for computational efficiency

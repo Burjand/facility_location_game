@@ -9,5 +9,7 @@
     max_iterations: 1000,
     seed: 66,
     n_simulations: 1,
-    convergence_threshold: 1e-5
+    convergence_threshold: 1e-5,
+    demand_distribution: ['normal',20,5],
+    weight_distribution: ['normal',5,1],
 }

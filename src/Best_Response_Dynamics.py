@@ -43,9 +43,9 @@ class BRD():
             self.facility_options[selected_random_facility] = 1  # Mark the facility as occupied by a player
 
         # Update the utilities of all players
-        for player_id, player in players.items():
+        for player_data in players.values():
             taken_facilities = [facility for facility, taken in self.facility_options.items() if taken == 1]
-            player['Utility'] = self.calculate_facility_utility(player['facility_position'], taken_facilities)
+            player_data['Utility'] = self.calculate_facility_utility(player_data['facility_position'], taken_facilities)
 
         #print("Players created with their initial positions and utilities:" + str(players)) 
 

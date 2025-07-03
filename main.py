@@ -13,6 +13,7 @@ if __name__ == "__main__":
     capacitated_facilities = CONFIGURATION['capacitated_facilities'] # (bool) True if you want capacitated facilities
 
     # HYPERPARAMETERS
+    # Basics
     n_nodes = CONFIGURATION['n_nodes']    # Number of nodes in the graph
     n_potential_facilities = CONFIGURATION['n_potential_facilities'] # Number of potential facilities
     n_brd_players = CONFIGURATION['n_brd_players'] # Number of players in the BRD process
@@ -20,12 +21,16 @@ if __name__ == "__main__":
     seed = CONFIGURATION['seed']
     n_simulations = CONFIGURATION['n_simulations'] # Number of simulations to run
     convergence_threshold = CONFIGURATION['convergence_threshold'] # Threshold used to determine convergence of the potential function (Not used in this version of the code)
-    
+    demand_distribution = tuple(CONFIGURATION['demand_distribution']) # The distribution of the graph's demand (node weights)
+    cost_distribution = tuple(CONFIGURATION['weight_distribution']) # The distribution of the graph's costs (edge weights)
+
+    # Add-ons
+    facility_capacity =  CONFIGURATION['facility_capacity']   
 
     # SIMULATION
 
     # Setup simulation
-    simulation = Simulation(n_nodes, n_potential_facilities, n_brd_players, max_iterations, n_simulations, seed)
+    simulation = Simulation(n_nodes, n_potential_facilities, n_brd_players, max_iterations, seed, demand_distribution, cost_distribution)
     
     # Run simulations
     if n_simulations == 1:
