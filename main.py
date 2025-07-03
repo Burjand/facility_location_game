@@ -1,15 +1,21 @@
 from Simulation import Simulation
+import tools.general_tools as general_tool
 
 if __name__ == "__main__":
 
+    CONFIGURATION = general_tool.extract_json_data("data/config.json")
+
+    # CONFIGURATION
+    capacitated_facilities = CONFIGURATION['capacitated_facilities'] # (bool) True if you want capacitated facilities
+
     # HYPERPARAMETERS
-    n_nodes = 100    # Number of nodes in the graph
-    n_potential_facilities = 80 # Number of potential facilities
-    n_brd_players = 10 # Number of players in the BRD process
-    max_iterations = 1000 # Max number of iterations before stopping an episode
-    seed = 66
-    n_simulations = 100 # Number of simulations to run
-    #convergence_threshold = 1e-5 # Threshold used to determine convergence of the potential function (Not used in this version of the code)
+    n_nodes = CONFIGURATION['n_nodes']    # Number of nodes in the graph
+    n_potential_facilities = CONFIGURATION['n_potential_facilities'] # Number of potential facilities
+    n_brd_players = CONFIGURATION['n_brd_players'] # Number of players in the BRD process
+    max_iterations = CONFIGURATION['max_iterations'] # Max number of iterations before stopping an episode
+    seed = CONFIGURATION['seed']
+    n_simulations = CONFIGURATION['n_simulations'] # Number of simulations to run
+    convergence_threshold = CONFIGURATION['convergence_threshold'] # Threshold used to determine convergence of the potential function (Not used in this version of the code)
     
 
     # SIMULATION

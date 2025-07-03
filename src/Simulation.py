@@ -1,5 +1,5 @@
 from Facility_Location_Game import FLG_environment
-from Tools import Tools
+from tools.algorithm_tools import Tools
 from Best_Response_Dynamics import BRD
 
 import copy
