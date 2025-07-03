@@ -11,25 +11,28 @@ class BRD():
         self.seed = seed
         self.rng = np.random.default_rng(seed=self.seed)
 
-        self.check_players_amount()
         self.players = self.create_players()
-
-    
-    def check_players_amount(self):
-
-        if self.n_players > sum(self.potential_facilities):
-            raise ValueError("More players than available facilities.")
 
 
     def create_players(self):
 
+        """
+        Creates the players for the game, with initialization of facility positions at random.
+
+        Returns:
+            players (dict): A dictionary containing as key the player id (an int) ad as items their facility position and their utility.
+        """
+
+        # Check amount of players is less than the number of available facilities
+        if self.n_players > sum(self.potential_facilities):
+            raise ValueError("More players than available facilities.")
+
         #print("Nodes demands: " + str(self.nodes_demand))
         
-        # Create a dictionary of options where is possible to put a facility, the value is initialized to 0 to indicate that in that potential facility there is no player assigned
+        # Create a dictionary of nodes where is possible to put a facility, the value is initialized to 0 to indicate that in that potential facility there is no player assigned
         # and the key is the index of the potential facility
         self.facility_options = {
-            i: 0 for i, is_potential in enumerate(self.potential_facilities) 
-            if is_potential == 1
+            i: 0 for i, is_potential in enumerate(self.potential_facilities) if is_potential == 1
         }
 
         # Create players and assign them to random facilities
@@ -50,6 +53,17 @@ class BRD():
 
 
     def find_best_response(self, player_id):
+
+        """
+        Finds the best response, i.e., the facility with the highest utility the agent can take given the current situtation, then moves the agent to that facility.
+
+        Args:
+            player_id (int): The player that will find its best response
+
+        Returns:
+            True or False: if a better facility was found
+        """
+
         current_facility = self.players[player_id]['facility_position']
         best_option = current_facility
         best_utility = self.players[player_id]['Utility']
@@ -62,13 +76,13 @@ class BRD():
             if self.facility_options[option] == 1:
                 continue  # Skip facilities occupied by others
 
-            # Compute utility if player moves to `option`
+            # Compute utility if player moves to 'option'
             taken_facilities = [
-                f for f, taken in self.facility_options.items() 
-                if taken == 1 or f == option  # Include the new facility
+                f for f, taken in self.facility_options.items() if taken == 1 or f == option  # Include the new facility
             ]
             utility = self.calculate_facility_utility(option, taken_facilities)
-
+            
+            # Take the option with the highest utility
             if utility > best_utility:
                 best_utility = utility
                 best_option = option
@@ -78,15 +92,26 @@ class BRD():
 
         # Update if a better option was found
         if best_option != current_facility:
-            self.facility_options[current_facility] = 0
-            self.facility_options[best_option] = 1
-            self.players[player_id]['facility_position'] = best_option
-            self.players[player_id]['Utility'] = best_utility
+            self.facility_options[current_facility] = 0 # Leave current facility
+            self.facility_options[best_option] = 1 # Take better facility
+            self.players[player_id]['facility_position'] = best_option # Update player's facility
+            self.players[player_id]['Utility'] = best_utility #Update player's utility
             return True
         return False
 
 
     def calculate_facility_utility(self, target_facility, taken_facilities):
+
+        """
+        Calculates the utility for a target facility given the taken facilities using the distance to the nodes
+
+        Args:
+            target_facility (int): The facility being considered for taking
+            taken_facilities (list): The facilities already taken by the other players
+
+        Returns:
+            utility: The utility of the target_facility
+        """
 
         # Utilities reward both demand capture and cost minimization
         nearest_nodes = self.calculate_nearest_nodes(taken_facilities)
@@ -105,7 +130,15 @@ class BRD():
 
 
     def calculate_nearest_nodes(self, taken_facilities):
-        # Calculate the nearest nodes to all facilities already taken
+        """
+        Calculate the nearest nodes to all facilities already taken.
+
+        Args:
+            taken_facilities (list): The facilities that have been taken by the players.
+
+        Returns:
+            facilities_nearest_nodes (dict): Each taken facility with thier correspondent nearest nodes.
+        """
 
         # Create a dictionary where the keys are the taken facilities and the values will hold the nearest nodes to each facility
         facilities_nearest_nodes = {facility: [] for facility in taken_facilities}
@@ -134,16 +167,23 @@ class BRD():
 
     def calculate_potential_function(self):
 
+        """
+        Calculates the general utility of the system, which is the sum of all the utility the facilities gather.
+
+        Returns
+            system_general_utility (float): The sum of all the utility the facilities gather
+        """
+
         taken_facilities = [facility for facility, taken in self.facility_options.items() if taken == 1]
         facilities_nearest_nodes = self.calculate_nearest_nodes(taken_facilities)
 
-        system_wide_efficiency = 0
+        system_general_utility = 0.0
 
         for node in self.nodes_demand.keys():
             nearest_facility = next((k for k, v in facilities_nearest_nodes.items() if node in v), None)
-            system_wide_efficiency += self.nodes_demand[node] * self.distances[node][nearest_facility]
+            system_general_utility += self.nodes_demand[node] * self.distances[node][nearest_facility]
 
-        return system_wide_efficiency
+        return system_general_utility
 
 
 

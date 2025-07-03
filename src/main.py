@@ -8,7 +8,7 @@ if __name__ == "__main__":
     n_brd_players = 10 # Number of players in the BRD process
     max_iterations = 1000 # Max number of iterations before stopping an episode
     seed = 66
-    n_simulations = 10 # Number of simulations to run
+    n_simulations = 100 # Number of simulations to run
     #convergence_threshold = 1e-5 # Threshold used to determine convergence of the potential function (Not used in this version of the code)
     
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
         assert (isinstance(n_simulations, int) and n_simulations > 1)
         avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration = simulation.run_simulations(n_simulations)
-        simulation.show_multiple_simulation_results(avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration)
+        simulation.show_multiple_simulations_results(avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration)
         
 
 

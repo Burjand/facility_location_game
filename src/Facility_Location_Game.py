@@ -17,18 +17,22 @@ class FLG_environment:
 
 
     def check_potential_facilities(self):
+
         # Make sure that the number of potential facilities is a valid number
 
+        if not isinstance(self.potential_facilities, int):
+            raise ValueError("The number of potential facilities must be an integer.")
         if self.potential_facilities > self.n_nodes:
-            raise ValueError("Number of potential facilities cannot exceed number of nodes.")
+            raise ValueError("The number of potential facilities cannot exceed number of nodes.")
         if self.potential_facilities < 1:
-            raise ValueError("Number of potential facilities must be at least 1.")
+            raise ValueError("The number of potential facilities must be at least 1.")
         return 0
     
 
     def generate_flg_env(self):
 
         # Generate the whole FLG environment
+
         self.graph, self.adj_matrix = self.generate_tree()
         self.node_demand = self.generate_demand_distribution()
         self.potential_facilities_mask = self.select_potential_facilities()
@@ -60,6 +64,7 @@ class FLG_environment:
     def generate_demand_distribution(self):
 
         # Generate demand for each node according to the specified distribution
+
         if self.demand_distribution[0] == 'normal':
             demand = self.rng.normal(loc=self.demand_distribution[1], scale=self.demand_distribution[2], size=self.n_nodes)
 
@@ -75,6 +80,8 @@ class FLG_environment:
     
 
     def select_potential_facilities(self):
+
+        # Select nodes to become potential facilities
 
         facilities = self.rng.choice(self.n_nodes, size=self.potential_facilities, replace=False).tolist()
         return [1 if i in facilities else 0 for i in range(self.n_nodes)]

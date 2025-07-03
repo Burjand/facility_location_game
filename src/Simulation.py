@@ -23,6 +23,10 @@ class Simulation():
 
     def setup_simulation(self):
 
+        """
+        Initializes the whole simulation environment
+        """
+
         # Generate the FLG environment
         self.FLG_env = FLG_environment(self.n_nodes, self.n_potential_facilities, seed=self.seed)
         assert all(isinstance(node, int) for node in self.FLG_env.graph.nodes()) # Check that nodes were correctly generated (Just in case)
@@ -36,21 +40,31 @@ class Simulation():
 
     def run_FLG_BRD_simulation(self):
 
+        """
+        Handle the simulation process
+
+        Returns:
+            iterations (int): Shows how many iterations the simulation took
+            potential_function_development (list): How the potential function changes for each iteration  
+            players_development_over_time (list): Players' facility assignments for each iteration
+        """
+
         # Best Response Dynamics process
         players_find_best_response = [True] * self.n_brd_players
 
+        # Variables for simulation study
         iterations = 0
         potential_function_development = [] # Track how the potential function changes over time        
         players_development_over_time = [] # Track players' assignments over time
         while any(players_find_best_response) and iterations < self.max_iterations:
 
             # Actual process
-            turn_of_player = self.main_rng.choice(tuple(range(self.n_brd_players))) # Randomly select a player to find their best response
-            updated = self.BRD_setup.find_best_response(turn_of_player)
+            player_in_turn = self.main_rng.choice(tuple(range(self.n_brd_players))) # Randomly select a player to find their best response
+            updated = self.BRD_setup.find_best_response(player_in_turn)
             if updated:
                 players_find_best_response = [True] * self.n_brd_players  # Force recheck all players
             else:
-                players_find_best_response[turn_of_player] = False
+                players_find_best_response[player_in_turn] = False
 
             # Simulation development study
             iterations += 1
@@ -63,6 +77,31 @@ class Simulation():
         # When the while loop ends it means that all player were not capable of finding a best response so the Nash Equilibrium is reached
 
         return iterations, potential_function_development, players_development_over_time
+
+    
+    def run_simulations(self, n_simulations):
+
+        """
+        Handle multiple simulations
+        """
+        
+        # Variables for simulation study
+        avg_iterations = 0
+        potential_function_developments_per_iteration = []
+        players_developments_per_iteration = []
+
+        for i in range(n_simulations):
+
+            print(f"Running simulation {i+1}/{n_simulations}...")
+            iterations, potential_function_development, players_development_over_time = self.run_FLG_BRD_simulation()
+
+            avg_iterations += iterations
+            potential_function_developments_per_iteration.append(potential_function_development)
+            players_developments_per_iteration.append(players_development_over_time)
+
+        avg_iterations /= n_simulations
+
+        return avg_iterations, potential_function_developments_per_iteration, players_developments_per_iteration
     
 
     def show_simulation_results(self, iterations, potential_function_development, players_development_over_time, plot_results=False):
@@ -121,29 +160,9 @@ class Simulation():
 
             plt.tight_layout()
             plt.show()
-
-    
-    def run_simulations(self, n_simulations):
-
-        avg_iterations = 0
-        potential_function_developments_per_iteration = []
-        players_developments_per_iteration = []
-
-        for i in range(n_simulations):
-
-            print(f"Running simulation {i+1}/{n_simulations}...")
-            iterations, potential_function_development, players_development_over_time = self.run_FLG_BRD_simulation()
-
-            avg_iterations += iterations
-            potential_function_developments_per_iteration.append(potential_function_development)
-            players_developments_per_iteration.append(players_development_over_time)
-
-        avg_iterations /= n_simulations
-
-        return avg_iterations, potential_function_developments_per_iteration, players_developments_per_iteration
             
 
-    def show_multiple_simulation_results(self, avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration):
+    def show_multiple_simulations_results(self, avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration):
 
         # Show the results of the simulation
         print(f"The simulations took {avg_iterations} iterations on average to be completed")
