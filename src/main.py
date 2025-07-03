@@ -2,6 +2,9 @@ from Simulation import Simulation
 
 if __name__ == "__main__":
 
+    # CONFIGURATION
+    capacitated_facilities = False
+
     # HYPERPARAMETERS
     n_nodes = 100    # Number of nodes in the graph
     n_potential_facilities = 80 # Number of potential facilities
@@ -23,7 +26,6 @@ if __name__ == "__main__":
         simulation.show_simulation_results(iterations, potential_function_development, players_development_over_time, True)
 
     else:
-
         assert (isinstance(n_simulations, int) and n_simulations > 1)
         avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration = simulation.run_simulations(n_simulations)
         simulation.show_multiple_simulations_results(avg_iterations, potential_function_developments_per_iteration, players_development_per_iteration)
