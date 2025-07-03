@@ -174,14 +174,10 @@ class BRD():
             system_general_utility (float): The sum of all the utility the facilities gather
         """
 
-        taken_facilities = [facility for facility, taken in self.facility_options.items() if taken == 1]
-        facilities_nearest_nodes = self.calculate_nearest_nodes(taken_facilities)
-
         system_general_utility = 0.0
 
-        for node in self.nodes_demand.keys():
-            nearest_facility = next((k for k, v in facilities_nearest_nodes.items() if node in v), None)
-            system_general_utility += self.nodes_demand[node] * self.distances[node][nearest_facility]
+        for player_data in self.players.values():
+            system_general_utility += player_data['Utility']
 
         return system_general_utility
 
