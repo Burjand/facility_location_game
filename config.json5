@@ -1,12 +1,13 @@
 {
     //Hyperparameters
-    n_nodes: 100,
-    n_potential_facilities: 80,
-    n_brd_players: 10,
+    n_nodes: 10,
+    n_potential_facilities: 8,
+    n_brd_players: 2,
     max_iterations: 1000,
     seed: 66,
     n_simulations: 1,
     convergence_threshold: 1e-5,
     demand_distribution: ['normal',20,5],
     weight_distribution: ['normal',5,1],
+    capacitated_facilities: false,
 }

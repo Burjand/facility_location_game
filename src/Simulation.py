@@ -68,6 +68,11 @@ class Simulation():
             else:
                 players_find_best_response[player_in_turn] = False
 
+            ######### DEBUG #########
+            if iterations == 5:               
+                print(self.FLG_env.node_demand)
+                print(self.FLG_env.adj_matrix)
+
             # Simulation development study
             iterations += 1
             potential_function_current_value = self.BRD_setup.calculate_potential_function()
