@@ -52,7 +52,7 @@
 
 ## Usage
 
-
+The file Documentation_FLG_BRD_environment.pdf contains the essential Math concepts to understand the simulation.
 
 Configure the simulation parameters in the provided configuration file or directly in `main.py`, then run:
 
