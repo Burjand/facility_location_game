@@ -34,7 +34,7 @@
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/facility_location_game.git
+   git clone https://github.com/burjand/facility_location_game.git
    cd facility_location_game
    ```
 2. **Create a Python 3.12 virtual environment**:
@@ -46,7 +46,7 @@
    ```bash
    pip install -r requirements.txt
    ```
-   Required packages include NumPy, NetworkX, Matplotlib, and JSON5.
+   Required packages include NumPy, NetworkX, Matplotlib, Statistics, and JSON5.
 
 ---
 
